@@ -1,5 +1,51 @@
 <!DOCTYPE html>
-<html>
-<head><title>Deeplink Test</title></head>
-<body>Deeplink test server is running 11111111.</body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Open NovelVideo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    function openApp() {
+      // Lấy query param từ URL web
+      const params = new URLSearchParams(window.location.search);
+      const titleId = params.get("titleId");
+      const episodeId = params.get("episodeId");
+
+      // Tạo deeplink schema
+      let deeplink = "novelvideo://open";
+      if (titleId || episodeId) {
+        deeplink += "?";
+        if (titleId) deeplink += "titleId=" + encodeURIComponent(titleId);
+        if (episodeId) {
+          if (titleId) deeplink += "&";
+          deeplink += "episodeId=" + encodeURIComponent(episodeId);
+        }
+      }
+
+      // Link fallback App Store / Play Store
+      const appStore = "https://apps.apple.com/app/idYOUR_APP_ID";
+      const playStore = "https://play.google.com/store/apps/details?id=YOUR_APP_PACKAGE";
+
+      // Detect iOS / Android
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      let storeUrl = appStore;
+      if (/android/i.test(ua)) {
+        storeUrl = playStore;
+      }
+
+      // Thử mở app
+      window.location = deeplink;
+
+      // Sau 1.5s nếu app không mở -> fallback store
+      setTimeout(() => {
+        window.location = storeUrl;
+      }, 1500);
+    }
+    window.onload = openApp;
+  </script>
+</head>
+<body>
+  <p>Đang mở NovelVideo app...</p>
+  <p>Nếu không thấy gì, bấm <a href="#" onclick="openApp();return false;">ở đây</a></p>
+</body>
 </html>
